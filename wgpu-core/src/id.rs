@@ -59,7 +59,7 @@ impl<T> PartialEq for Id<T> {
 
 unsafe impl<T> peek_poke::Poke for Id<T> {
     fn max_size() -> usize {
-         mem::size_of::<u64>()
+        mem::size_of::<u64>()
     }
     unsafe fn poke_into(&self, data: *mut u8) -> *mut u8 {
         self.0.poke_into(data)
@@ -92,7 +92,6 @@ impl<T> TypedId for Id<T> {
         )
     }
 }
-
 
 pub type AdapterId = Id<crate::instance::Adapter<Dummy>>;
 pub type SurfaceId = Id<crate::instance::Surface>;

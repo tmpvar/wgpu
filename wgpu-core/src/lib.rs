@@ -39,12 +39,20 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "serde")]
+use serde;
+
 type SubmissionIndex = usize;
 type Index = u32;
 type Epoch = u32;
 
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum Backend {
     Empty = 0,
     Vulkan = 1,
@@ -109,8 +117,7 @@ impl LifeGuard {
 
     /// Returns `true` if the resource is still needed by the user.
     fn use_at(&self, submit_index: SubmissionIndex) -> bool {
-        self.submission_index
-            .store(submit_index, Ordering::Release);
+        self.submission_index.store(submit_index, Ordering::Release);
         self.ref_count.is_some()
     }
 }
@@ -178,11 +185,7 @@ pub struct Origin3d {
 }
 
 impl Origin3d {
-    pub const ZERO: Self = Origin3d {
-        x: 0,
-        y: 0,
-        z: 0,
-    };
+    pub const ZERO: Self = Origin3d { x: 0, y: 0, z: 0 };
 }
 
 impl Default for Origin3d {
@@ -193,6 +196,8 @@ impl Default for Origin3d {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct Extent3d {
     pub width: u32,
     pub height: u32,
@@ -207,6 +212,8 @@ pub struct U32Array {
 }
 
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub(crate) struct Features {
     pub max_bind_groups: u32,
     pub supports_texture_d24_s8: bool,

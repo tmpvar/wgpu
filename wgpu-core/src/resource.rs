@@ -5,11 +5,7 @@
 use crate::{
     id::{DeviceId, SwapChainId, TextureId},
     track::DUMMY_SELECTOR,
-    BufferAddress,
-    Extent3d,
-    LifeGuard,
-    RefCount,
-    Stored,
+    BufferAddress, Extent3d, LifeGuard, RefCount, Stored,
 };
 
 use hal;
@@ -57,6 +53,8 @@ pub struct BufferDescriptor {
 
 #[repr(C)]
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum BufferMapAsyncStatus {
     Success,
     Error,
@@ -133,6 +131,8 @@ impl<B: hal::Backend> Borrow<()> for Buffer<B> {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum TextureDimension {
     D1,
     D2,
@@ -141,6 +141,8 @@ pub enum TextureDimension {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 pub enum TextureFormat {
     // Normal 8 bit formats
     R8Unorm = 0,
@@ -204,6 +206,8 @@ pub enum TextureFormat {
 
 bitflags::bitflags! {
     #[repr(transparent)]
+    #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
     pub struct TextureUsage: u32 {
         const COPY_SRC = 1;
         const COPY_DST = 2;
@@ -225,6 +229,8 @@ bitflags::bitflags! {
 
 #[repr(C)]
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct TextureDescriptor {
     pub size: Extent3d,
     pub array_layer_count: u32,
@@ -261,6 +267,8 @@ impl<B: hal::Backend> Borrow<hal::image::SubresourceRange> for Texture<B> {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum TextureAspect {
     All,
     StencilOnly,
@@ -287,6 +295,8 @@ pub enum TextureViewDimension {
 
 #[repr(C)]
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct TextureViewDescriptor {
     pub format: TextureFormat,
     pub dimension: TextureViewDimension,
@@ -334,6 +344,8 @@ impl<B: hal::Backend> Borrow<()> for TextureView<B> {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum AddressMode {
     ClampToEdge = 0,
     Repeat = 1,
@@ -348,6 +360,8 @@ impl Default for AddressMode {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum FilterMode {
     Nearest = 0,
     Linear = 1,
@@ -361,6 +375,8 @@ impl Default for FilterMode {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum CompareFunction {
     Never = 0,
     Less = 1,
@@ -383,6 +399,8 @@ impl CompareFunction {
 
 #[repr(C)]
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct SamplerDescriptor {
     pub address_mode_u: AddressMode,
     pub address_mode_v: AddressMode,

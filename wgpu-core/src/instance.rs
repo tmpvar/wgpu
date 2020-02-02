@@ -8,16 +8,17 @@ use crate::{
     device::{Device, BIND_BUFFER_ALIGNMENT},
     hub::{GfxBackend, Global, IdentityFilter, Token},
     id::{AdapterId, DeviceId},
-    power,
-    Backend,
+    power, Backend,
 };
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "serde")]
+use serde;
+
 pub use hal::adapter::{AdapterInfo, DeviceType};
 use hal::{self, adapter::PhysicalDevice as _, queue::QueueFamily as _, Instance as _};
-
 
 #[derive(Debug)]
 pub struct Instance {
@@ -102,6 +103,7 @@ pub struct Adapter<B: hal::Backend> {
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub enum PowerPreference {
     Default = 0,
     LowPower = 1,
@@ -111,6 +113,7 @@ pub enum PowerPreference {
 #[repr(C)]
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct RequestAdapterOptions {
     pub power_preference: PowerPreference,
 }
@@ -126,14 +129,18 @@ impl Default for RequestAdapterOptions {
 #[repr(C)]
 #[derive(Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct Extensions {
+    #[cfg_attr(feature = "serde", serde(default))]
     pub anisotropic_filtering: bool,
 }
 
 #[repr(C)]
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct Limits {
+    #[cfg_attr(feature = "serde", serde(default))]
     pub max_bind_groups: u32,
 }
 
@@ -149,7 +156,9 @@ impl Default for Limits {
 #[derive(Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct DeviceDescriptor {
+    #[cfg_attr(feature = "serde", serde(default))]
     pub extensions: Extensions,
+    #[cfg_attr(feature = "serde", serde(default))]
     pub limits: Limits,
 }
 
@@ -272,14 +281,15 @@ impl<F: IdentityFilter<AdapterId>> Global<F> {
         }
 
         let preferred_gpu = match desc.power_preference {
-            PowerPreference::Default => {
-                match power::is_battery_discharging() {
-                    Ok(false) => discrete.or(integrated).or(other).or(virt),
-                    Ok(true) => integrated.or(discrete).or(other).or(virt),
-                    Err(err) => {
-                        log::debug!("Power info unavailable, preferring integrated gpu ({})", err);
-                        integrated.or(discrete).or(other).or(virt)
-                    }
+            PowerPreference::Default => match power::is_battery_discharging() {
+                Ok(false) => discrete.or(integrated).or(other).or(virt),
+                Ok(true) => integrated.or(discrete).or(other).or(virt),
+                Err(err) => {
+                    log::debug!(
+                        "Power info unavailable, preferring integrated gpu ({})",
+                        err
+                    );
+                    integrated.or(discrete).or(other).or(virt)
                 }
             },
             PowerPreference::LowPower => integrated.or(other).or(discrete).or(virt),
@@ -379,9 +389,8 @@ impl<F: IdentityFilter<DeviceId>> Global<F> {
         let device = {
             let (adapter_guard, _) = hub.adapters.read(&mut token);
             let adapter = &adapter_guard[adapter_id].raw;
-            let wishful_features =
-                hal::Features::VERTEX_STORES_AND_ATOMICS |
-                hal::Features::FRAGMENT_STORES_AND_ATOMICS;
+            let wishful_features = hal::Features::VERTEX_STORES_AND_ATOMICS
+                | hal::Features::FRAGMENT_STORES_AND_ATOMICS;
 
             let family = adapter
                 .queue_families

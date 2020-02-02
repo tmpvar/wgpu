@@ -5,16 +5,21 @@
 use crate::{
     device::RenderPassContext,
     id::{PipelineLayoutId, ShaderModuleId},
-    resource,
-    BufferAddress,
-    RawString,
-    U32Array,
+    resource, BufferAddress, RawString, U32Array,
 };
+
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "serde")]
+use serde;
 
 pub type ShaderLocation = u32;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum BlendFactor {
     Zero = 0,
     One = 1,
@@ -33,6 +38,8 @@ pub enum BlendFactor {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum BlendOperation {
     Add = 0,
     Subtract = 1,
@@ -49,6 +56,8 @@ impl Default for BlendOperation {
 
 bitflags::bitflags! {
     #[repr(transparent)]
+    #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+    #[cfg_attr(feature = "serde", serde(rename_all = "UPPERCASE"))]
     pub struct ColorWrite: u32 {
         const RED = 1;
         const GREEN = 2;
@@ -67,6 +76,8 @@ impl Default for ColorWrite {
 
 #[repr(C)]
 #[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct BlendDescriptor {
     pub src_factor: BlendFactor,
     pub dst_factor: BlendFactor,
@@ -99,6 +110,8 @@ impl Default for BlendDescriptor {
 
 #[repr(C)]
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct ColorStateDescriptor {
     pub format: resource::TextureFormat,
     pub alpha_blend: BlendDescriptor,
@@ -108,6 +121,8 @@ pub struct ColorStateDescriptor {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum StencilOperation {
     Keep = 0,
     Zero = 1,
@@ -127,6 +142,8 @@ impl Default for StencilOperation {
 
 #[repr(C)]
 #[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct StencilStateFaceDescriptor {
     pub compare: resource::CompareFunction,
     pub fail_op: StencilOperation,
@@ -151,6 +168,8 @@ impl Default for StencilStateFaceDescriptor {
 
 #[repr(C)]
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct DepthStencilStateDescriptor {
     pub format: resource::TextureFormat,
     pub depth_write_enabled: bool,
@@ -169,6 +188,7 @@ impl DepthStencilStateDescriptor {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum IndexFormat {
     Uint16 = 0,
     Uint32 = 1,
@@ -176,6 +196,7 @@ pub enum IndexFormat {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum VertexFormat {
     Uchar2 = 1,
     Uchar4 = 3,
@@ -211,6 +232,7 @@ pub enum VertexFormat {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum InputStepMode {
     Vertex = 0,
     Instance = 1,
@@ -218,6 +240,8 @@ pub enum InputStepMode {
 
 #[repr(C)]
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct VertexAttributeDescriptor {
     pub offset: BufferAddress,
     pub format: VertexFormat,
@@ -269,6 +293,8 @@ pub struct ComputePipeline<B: hal::Backend> {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub enum PrimitiveTopology {
     PointList = 0,
     LineList = 1,
@@ -279,6 +305,8 @@ pub enum PrimitiveTopology {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum FrontFace {
     Ccw = 0,
     Cw = 1,
@@ -292,6 +320,8 @@ impl Default for FrontFace {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum CullMode {
     None = 0,
     Front = 1,
@@ -306,6 +336,8 @@ impl Default for CullMode {
 
 #[repr(C)]
 #[derive(Clone, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub struct RasterizationStateDescriptor {
     pub front_face: FrontFace,
     pub cull_mode: CullMode,
